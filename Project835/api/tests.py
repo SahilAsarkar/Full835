@@ -18,7 +18,7 @@ User = get_user_model()
 class TestDjangoAdminWorkflow(TestCase):
     def setUp(self):
         call_command('seed_data')
-        self.user = User.objects.create_user(
+        self.user = User.objects.create_superuser(
             email='admin_test@onesmarter.com',
             name='Admin Tester',
             mobile='9999999999',
@@ -726,7 +726,18 @@ startxref
         r_down1 = self.client.get(f'/api/clients/{cid}/golive/steps/1/download')
         self.assertEqual(r_down1.status_code, 200)
 
-        pdf_bytes_gl1 = self._create_nda_pdf(self._get_cutover_tmpl_lines())
+        lines_gl1 = self._get_cutover_tmpl_lines()
+        lines_gl1[1] = "Client (Authorizing Party): Buckeye Plan Services"
+        lines_gl1[2] = "Provider (Authorizing Party): OneSmarter"
+        lines_gl1[3] = "Project / System: MIR Relay"
+        lines_gl1[4] = "Scheduled Cutover Date: 2026-08-20"
+        lines_gl1[5] = "The parties authorize the cutover of MIR Relay from the"
+        lines_gl1[9] = "Client Authorized Signatory: John Doe"
+        lines_gl1[10] = "Client Authorization Date: 2026-08-20"
+        lines_gl1[11] = "Provider Authorized Signatory: Jane Smith"
+        lines_gl1[12] = "Provider Authorization Date: 2026-08-20"
+        lines_gl1[13] = "Status: Executed"
+        pdf_bytes_gl1 = self._create_nda_pdf(lines_gl1)
         r_up1 = self.client.post(f'/api/clients/{cid}/golive/steps/1/upload', data=pdf_bytes_gl1, content_type='application/octet-stream', HTTP_X_FILENAME='Cutover_Auth.pdf')
         self.assertEqual(r_up1.status_code, 200)
         steps = r_up1.json()['state']['steps']
@@ -734,10 +745,22 @@ startxref
         self.assertTrue(steps[1]['inProgress'])
 
         # 3. Step 2 Upload & Download
-        r_down2 = self.client.get(f'/api/download/{cid}/golive_step_2_compliance')
+        r_down2 = self.client.get(f'/api/clients/{cid}/golive/steps/2/download')
         self.assertEqual(r_down2.status_code, 200)
 
-        pdf_bytes_gl2 = self._create_nda_pdf(self._get_baseline_tmpl_lines())
+        lines_gl2 = self._get_baseline_tmpl_lines()
+        lines_gl2[1] = "Client: Buckeye Plan Services"
+        lines_gl2[2] = "Provider: OneSmarter"
+        lines_gl2[3] = "System / Project: MIR Relay"
+        lines_gl2[4] = "Baseline Version: v1.0.0"
+        lines_gl2[5] = "Baseline Established Date: 2026-08-20"
+        lines_gl2[7] = "MIR Relay under the OneSmarter MIR Relay onboarding, against"
+        lines_gl2[9] = "Baseline Established By: John Doe"
+        lines_gl2[10] = "Establishment Date: 2026-08-20"
+        lines_gl2[11] = "Baseline Approved By: Jane Smith"
+        lines_gl2[12] = "Approval Date: 2026-08-20"
+        lines_gl2[13] = "Status: Approved"
+        pdf_bytes_gl2 = self._create_nda_pdf(lines_gl2)
         r_up2 = self.client.post(f'/api/clients/{cid}/golive/steps/2/upload', data=pdf_bytes_gl2, content_type='application/octet-stream', HTTP_X_FILENAME='Baseline_Compliance.pdf')
         self.assertEqual(r_up2.status_code, 200)
         steps = r_up2.json()['state']['steps']
@@ -797,12 +820,22 @@ startxref
 
     # --- 22. Dynamic Last Login & Access Info Test ---
     def test_dynamic_last_login_and_access_info(self):
+        import pyotp
+        from .models import AdminMFA
+        u = User.objects.get(email='admin@onesmarter.com')
+        mfa, _ = AdminMFA.objects.get_or_create(user=u)
+        mfa.totp_secret = pyotp.random_base32()
+        mfa.is_enabled = True
+        mfa.save()
+        totp = pyotp.TOTP(mfa.totp_secret)
+        code = totp.now()
+
         # 1. Perform first login
-        r1 = self.client.post('/api/auth/login/', data={'email': 'admin_test@onesmarter.com', 'password': 'testpassword'}, content_type='application/json')
+        r1 = self.client.post('/api/auth/login/', data={'email': 'admin@onesmarter.com', 'password': 'adminpassword', 'code': code}, content_type='application/json')
         self.assertEqual(r1.status_code, 200)
 
         # 2. Perform second login
-        r2 = self.client.post('/api/auth/login/', data={'email': 'admin_test@onesmarter.com', 'password': 'testpassword'}, content_type='application/json')
+        r2 = self.client.post('/api/auth/login/', data={'email': 'admin@onesmarter.com', 'password': 'adminpassword', 'code': totp.now()}, content_type='application/json')
         self.assertEqual(r2.status_code, 200)
         data2 = r2.json()
         self.assertIn('last_login', data2)
