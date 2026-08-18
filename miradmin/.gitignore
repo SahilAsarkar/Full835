@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build & Output
+dist/
+build/
+*.zip
+
+# Python Bytecode & Environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+
+# Databases & Cache
+*.sqlite3
+*.db
+data/*.db
+data/evidence/*
+!.gitignore
+.pytest_cache/
+
+# OS / Editor clutter
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

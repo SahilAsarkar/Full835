@@ -1,0 +1,15 @@
+# id | title | evidence file | expected_status=... | owner=client|provider|external | owner_name=... | desc=... | phase=...
+1 | Mutual NDA signed | NDA_Northwood_20250804.pdf | expected_status=Complete | owner=client | desc=Executed mutual NDA, both signatures on record | phase=Phase one · Paper before data
+2 | Business associate agreement executed | BAA_Northwood_20250805.pdf | expected_status=Complete | owner=client | desc=Signed by both parties, kept on record | phase=Phase one · Paper before data
+3 | Security review returned to client | Security_Review_Returned_to_Client.pdf | expected_status=Complete | owner=client | desc=SOC 2 report, ISO 27001 certificate, HIPAA audit letter, subprocessor list | phase=Phase one · Paper before data
+4 | Named contacts recorded | Named_Contacts_Record.pdf | expected_status=Complete | owner=client | desc=Technical, operations, privacy officer, and after-hours escalation | phase=Phase one · Paper before data
+5 | Claims system identified | Claims_System_Identification.pdf | expected_status=Complete | owner=client | desc=Vendor hosted, writes 835 to an SFTP drop nightly | phase=Phase two · Understand their system
+6 | Delivery method agreed | Delivery_Method_Agreement.pdf | expected_status=Complete | owner=client | desc=Watched folder over SFTP, keys exchanged, no change to their system | phase=Phase two · Understand their system
+7 | Sample 835 received | Sample_835_Northwood.edi | expected_status=Complete | owner=client | desc=De-identified sample preferred, production file acceptable under the BAA | phase=Phase two · Understand their system
+8 | Mapping notes written | 835_to_MIR_Mapping_Notes.pdf | expected_status=Complete | owner=provider | owner_name=Rushi | desc=Where their 835 differs from the standard handling | phase=Phase two · Understand their system
+9 | Test environment created | Test_Environment_Record.pdf | expected_status=Complete | owner=provider | owner_name=Integration Engineering | desc=Separate keys, separate folders, no path to the MPL production drop | phase=Phase three · Prove it on test
+10 | Test conversions reviewed with the client | Test_Conversion_Client_Review.pdf | expected_status=Complete | owner=client | desc=Side by side, 835 against MIR, until they agree it's right | phase=Phase three · Prove it on test
+11 | MPL accepts a test file | MPL_Test_File_Acceptance.pdf | expected_status=Complete | owner=external | owner_name=MPL | desc=Their acceptance, not ours, is the thing that counts | phase=Phase three · Prove it on test
+12 | Client staff walked through the portal | Portal_Walkthrough_Record.pdf | expected_status=Complete | owner=client | desc=Flow, notices, archive, and how a held record reaches them | phase=Phase four · Live
+13 | Go live checks passed | Go_Live_Checks.pdf | expected_status=Complete | owner=provider | owner_name=Vikram J. | desc=See the go live screen | phase=Phase four · Live
+14 | First production file delivered | First_Production_Delivery_Record.pdf | expected_status=Complete | owner=provider | owner_name=Production Support | desc=Watched for a week before the client is on their own | phase=Phase four · Live
