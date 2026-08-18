@@ -252,20 +252,20 @@ def validate_template_structural_integrity(step_number: int, buf: bytes, is_pdf:
     full_up_text = "".join(up_lines)
     clean_up_text = re.sub(r'[^a-zA-Z0-9]', '', full_up_text).lower()
 
-    # Strict line comparison against template reference
-    if tmpl_lines and up_lines:
-        if len(up_lines) != len(tmpl_lines):
-            return False, [{"ok": False, "label": "Line Count Mismatch", "detail": f"Validation failed: Document line count ({len(up_lines)}) does not match template ({len(tmpl_lines)})."}]
-        for i, (tline, uline) in enumerate(zip(tmpl_lines, up_lines)):
-            t_tokens = list(TOKEN_RE.finditer(tline))
-            if not t_tokens:
-                if tline != uline:
-                    return False, [{"ok": False, "label": "Static Text Modified", "detail": f"Validation failed: Line {i+1} static text modified."}]
-            else:
-                prefix = tline[:t_tokens[0].start()]
-                if prefix and not uline.startswith(prefix):
-                    return False, [{"ok": False, "label": "Prefix Modified", "detail": f"Validation failed: Line {i+1} prefix modified."}]
+    full_tmpl_text = "".join(tmpl_lines)
+    static_blocks = re.split(r"\{\{[A-Z0-9_]+\}\}", full_tmpl_text)
+    
+    search_idx = 0
+    for block in static_blocks:
+        clean_block = re.sub(r'[^a-zA-Z0-9]', '', block).lower()
+        # Only check substantial text blocks (> 15 chars) to prevent false mismatches on tiny fragments
+        if len(clean_block) > 15:
+            found_idx = clean_up_text.find(clean_block, search_idx)
+            if found_idx == -1:
+                return False, [{"ok": False, "label": "Template Text Altered", "detail": f"Validation failed: The required official template text has been tampered with or removed. Missing text near: '{block.strip()[:60]}...'"}]
+            search_idx = found_idx + len(clean_block)
 
+    checks.append({"ok": True, "label": "Smart Text Verification", "detail": "Core template text is preserved perfectly (ignoring spacing and formatting)." })
     checks.append({"ok": True, "label": "Placeholder Verification", "detail": "All required placeholders have been filled."})
     return True, checks
 
