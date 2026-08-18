@@ -1,0 +1,236 @@
+{
+  "pack": "Northwood onboarding evidence sample pack",
+  "version": "1.0",
+  "validation_rule": "For each checklist item: expected evidence file exists; all required fields are non-empty; required placeholder markers have been replaced; status indicates Complete/Executed/Accepted as applicable; dates and emails are syntactically valid.",
+  "items": [
+    {
+      "item": 1,
+      "title": "Mutual NDA signed",
+      "primary_file": "NDA_Northwood_20250804.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "PROVIDER_LEGAL_NAME",
+        "NDA_EFFECTIVE_DATE",
+        "CLIENT_SIGNATORY_NAME",
+        "PROVIDER_SIGNATORY_NAME",
+        "CLIENT_SIGNATURE_DATE",
+        "PROVIDER_SIGNATURE_DATE"
+      ],
+      "expected_status": "Complete",
+      "description": "Mutual NDA evidence with both party/signature details."
+    },
+    {
+      "item": 2,
+      "title": "Business associate agreement executed",
+      "primary_file": "BAA_Northwood_20250805.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "PROVIDER_LEGAL_NAME",
+        "BAA_EFFECTIVE_DATE",
+        "BAA_EXPIRATION_DATE",
+        "CLIENT_SIGNATORY_NAME",
+        "PROVIDER_SIGNATORY_NAME",
+        "CLIENT_SIGNATURE_DATE",
+        "PROVIDER_SIGNATURE_DATE"
+      ],
+      "expected_status": "Complete",
+      "description": "BAA evidence with dates and both signatories."
+    },
+    {
+      "item": 3,
+      "title": "Security review returned to client",
+      "primary_file": "Security_Review_Returned_to_Client.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "SECURITY_REVIEW_SENT_DATE",
+        "CLIENT_SECURITY_CONTACT",
+        "PROVIDER_SECURITY_OWNER",
+        "SECURITY_REVIEW_DELIVERY_METHOD"
+      ],
+      "expected_status": "Complete",
+      "description": "Cover record plus four sample security artifacts."
+    },
+    {
+      "item": 4,
+      "title": "Named contacts recorded",
+      "primary_file": "Named_Contacts_Record.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "TECH_CONTACT_NAME",
+        "TECH_CONTACT_EMAIL",
+        "OPS_CONTACT_NAME",
+        "OPS_CONTACT_EMAIL",
+        "PRIVACY_CONTACT_NAME",
+        "PRIVACY_CONTACT_EMAIL",
+        "AFTER_HOURS_CONTACT_NAME",
+        "AFTER_HOURS_CONTACT_METHOD",
+        "AFTER_HOURS_RESPONSE_WINDOW"
+      ],
+      "expected_status": "Complete",
+      "description": "Contact matrix with all four required roles."
+    },
+    {
+      "item": 5,
+      "title": "Claims system identified",
+      "primary_file": "Claims_System_Identification.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "CLAIMS_SYSTEM_VENDOR",
+        "CLAIMS_SYSTEM_NAME",
+        "SOURCE_SFTP_DROP_PATH",
+        "SOURCE_835_FILENAME_PATTERN",
+        "CLIENT_CLAIMS_OWNER"
+      ],
+      "expected_status": "Complete",
+      "description": "Upstream system/vendor and 835 output details."
+    },
+    {
+      "item": 6,
+      "title": "Delivery method agreed",
+      "primary_file": "Delivery_Method_Agreement.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "SFTP_HOST",
+        "SFTP_PORT",
+        "SFTP_WATCHED_FOLDER",
+        "SFTP_ARCHIVE_FOLDER",
+        "CLIENT_KEY_FINGERPRINT",
+        "PROVIDER_KEY_FINGERPRINT",
+        "WATCH_INTERVAL_OR_TRIGGER"
+      ],
+      "expected_status": "Complete",
+      "description": "SFTP watched-folder agreement and key fingerprints."
+    },
+    {
+      "item": 7,
+      "title": "Sample 835 received",
+      "primary_file": "Sample_835_Northwood.edi",
+      "required_placeholders": [
+        "CLIENT_REFERENCE_ID",
+        "PAYER_NAME",
+        "PAYER_ID",
+        "PAYEE_NAME",
+        "PAYEE_NPI",
+        "CLAIM_CONTROL_NUMBER",
+        "PAYER_CLAIM_NUMBER",
+        "PATIENT_FIRST_NAME",
+        "PATIENT_LAST_NAME",
+        "MEMBER_ID",
+        "CPT_CODE",
+        "LINE_ITEM_CONTROL_NUMBER"
+      ],
+      "expected_status": "Complete",
+      "description": "X12-style 835 sample with replaceable business-value placeholders."
+    },
+    {
+      "item": 8,
+      "title": "Mapping notes written",
+      "primary_file": "835_to_MIR_Mapping_Notes.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "MAPPING_OWNER",
+        "MAPPING_VERSION",
+        "MAPPING_REVIEW_DATE",
+        "MAPPING_APPROVER"
+      ],
+      "expected_status": "Complete",
+      "description": "Mapping rules and client-specific deviations."
+    },
+    {
+      "item": 9,
+      "title": "Test environment created",
+      "primary_file": "Test_Environment_Record.pdf",
+      "required_placeholders": [
+        "TEST_ENVIRONMENT_NAME",
+        "TEST_SFTP_HOST",
+        "TEST_INBOUND_FOLDER",
+        "TEST_MIR_OUTPUT_FOLDER",
+        "TEST_KEY_FINGERPRINT",
+        "TEST_ENV_OWNER",
+        "TEST_ENV_CREATED_DATE"
+      ],
+      "expected_status": "Complete",
+      "description": "Isolated test setup record."
+    },
+    {
+      "item": 10,
+      "title": "Test conversions reviewed with the client",
+      "primary_file": "Test_Conversion_Client_Review.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "CONVERSION_REVIEW_DATE",
+        "REVIEW_835_FILENAME",
+        "REVIEW_MIR_FILENAME",
+        "CLAIMS_REVIEWED_COUNT",
+        "OPEN_DIFFERENCE_COUNT",
+        "CLIENT_REVIEWER_NAME",
+        "PROVIDER_REVIEWER_NAME"
+      ],
+      "expected_status": "Complete",
+      "description": "Client-reviewed 835-to-MIR comparison signoff."
+    },
+    {
+      "item": 11,
+      "title": "MPL accepts a test file",
+      "primary_file": "MPL_Test_File_Acceptance.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "MPL_TEST_FILENAME",
+        "MPL_TEST_ENVIRONMENT",
+        "MPL_SUBMISSION_TIMESTAMP",
+        "MPL_ACCEPTANCE_REFERENCE",
+        "MPL_REVIEWER",
+        "MPL_ACCEPTANCE_DATE"
+      ],
+      "expected_status": "Complete",
+      "description": "External MPL test acceptance evidence."
+    },
+    {
+      "item": 12,
+      "title": "Client staff walked through the portal",
+      "primary_file": "Portal_Walkthrough_Record.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "PORTAL_WALKTHROUGH_DATE",
+        "TRAINER_NAME",
+        "CLIENT_ATTENDEES",
+        "WALKTHROUGH_OPEN_ITEMS",
+        "CLIENT_ACKNOWLEDGMENT_NAME"
+      ],
+      "expected_status": "Complete",
+      "description": "Portal training/walkthrough record."
+    },
+    {
+      "item": 13,
+      "title": "Go live checks passed",
+      "primary_file": "Go_Live_Checks.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "GO_LIVE_DATE",
+        "CLIENT_GO_LIVE_APPROVER",
+        "PROVIDER_GO_LIVE_APPROVER"
+      ],
+      "expected_status": "Complete",
+      "description": "Go-live checklist with all critical controls passed."
+    },
+    {
+      "item": 14,
+      "title": "First production file delivered",
+      "primary_file": "First_Production_Delivery_Record.pdf",
+      "required_placeholders": [
+        "CLIENT_LEGAL_NAME",
+        "PROD_835_FILENAME",
+        "PROD_835_RECEIVED_TS",
+        "PROD_MIR_FILENAME",
+        "PROD_MIR_GENERATED_TS",
+        "PROD_MPL_DELIVERED_TS",
+        "PROD_MPL_RESULT_REFERENCE",
+        "MONITORING_START_DATE",
+        "MONITORING_END_DATE",
+        "PRODUCTION_MONITOR_OWNER"
+      ],
+      "expected_status": "Complete",
+      "description": "First live production delivery and monitoring record."
+    }
+  ]
+}

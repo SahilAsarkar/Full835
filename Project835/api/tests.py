@@ -74,7 +74,15 @@ class TestDjangoAdminWorkflow(TestCase):
         r = self.client.post('/api/clients/', data={'name': 'Delta Health'}, content_type='application/json')
         cid = r.json()['client']['id']
         
-        valid_nda = self._create_nda_pdf(self._get_base_tmpl_lines())
+        lines = self._get_base_tmpl_lines()
+        lines[1] = "Client (Disclosing/Receiving Party): Delta Health"
+        lines[2] = "Provider (Disclosing/Receiving Party): OneSmarter"
+        lines[3] = "Effective Date: 2026-08-15"
+        lines[8] = "Client Signatory: John Doe"
+        lines[9] = "Client Signature Date: 2026-08-15"
+        lines[10] = "Provider Signatory: Jane Smith"
+        lines[11] = "Provider Signature Date: 2026-08-15"
+        valid_nda = self._create_nda_pdf(lines)
         r_up = self.client.post(f'/api/clients/{cid}/steps/step_1_nda/upload', data=valid_nda, content_type='application/octet-stream', HTTP_X_FILENAME='My_Signed_NDA.pdf')
         self.assertEqual(r_up.status_code, 200)
 
@@ -160,16 +168,19 @@ class TestDjangoAdminWorkflow(TestCase):
 
         # Stage valid EDI file (Stage 1)
         valid_edi = (
-            "ISA*00*          *00*          *ZZ*SENDER         *ZZ*RECEIVER       *260814*1000*^*00501*000000001*0*P*:~\n"
-            "GS*HP*SENDER*RECEIVER*20260814*1000*1*X*005010X221A1~\n"
-            "ST*835*0001~\n"
-            "BPR*I*1000.00*C*ACH*CTX*01*999999999*DA*123456789*1234567890**01*999999998*DA*000111222*20260814~\n"
-            "TRN*1*TRACE12345*1999999999~\n"
-            "N1*PR*PAYER NAME*XV*PAYERID~\n"
-            "N1*PE*PAYEE NAME*XX*1234567890~\n"
-            "CLP*CLAIM001*1*1000.00*800.00*200.00*12*PAYERCLM001*11*1~\n"
-            "SE*7*0001~\n"
-            "GE*1*1~\n"
+            "ISA*00*          *00*          *ZZ*SUBMITTER      *ZZ*RECEIVER       *260814*1200*U*00501*000000001*0*T*:~"
+            "GS*HP*SUBMITTER*RECEIVER*20260814*1200*1*X*005010X221A1~"
+            "ST*835*0001~"
+            "BPR*I*150.00*C*ACH*CTX*01*999999999*DA*123456*1999999999**01*999999999*DA*987654*20260814~"
+            "TRN*1*CLM1001*1999999999~"
+            "N1*PR*Acme Payer*XV*PAY001~"
+            "N1*PE*Acme Payee*XX*1234567890~"
+            "CLP*CLM1001*1*200.00*150.00*50.00*11*PCLM001*11~"
+            "NM1*QC*1*Doe*John****MI*MEM1001~"
+            "SVC*HC:99213*200.00*150.00**1~"
+            "REF*6R*LINE001~"
+            "SE*11*0001~"
+            "GE*1*1~"
             "IEA*1*000000001~"
         ).encode('utf-8')
 
@@ -289,7 +300,15 @@ class TestDjangoAdminWorkflow(TestCase):
         r_c = self.client.post('/api/clients/', data={'name': 'Redo Test'}, content_type='application/json')
         cid = r_c.json()['client']['id']
 
-        nda_bytes = self._create_nda_pdf(self._get_base_tmpl_lines())
+        lines = self._get_base_tmpl_lines()
+        lines[1] = "Client (Disclosing/Receiving Party): Redo Test"
+        lines[2] = "Provider (Disclosing/Receiving Party): OneSmarter"
+        lines[3] = "Effective Date: 2026-08-15"
+        lines[8] = "Client Signatory: John Doe"
+        lines[9] = "Client Signature Date: 2026-08-15"
+        lines[10] = "Provider Signatory: Jane Smith"
+        lines[11] = "Provider Signature Date: 2026-08-15"
+        nda_bytes = self._create_nda_pdf(lines)
         self.client.post(f'/api/clients/{cid}/steps/step_1_nda/upload', data=nda_bytes, content_type='application/octet-stream', HTTP_X_FILENAME='NDA_Signed.pdf')
 
         steps = self.client.get(f'/api/clients/{cid}/state/').json()['state']['steps']
@@ -412,11 +431,19 @@ startxref
             "Status: {{STATUS}}"
         ]
 
-    # Test 1 — Original untouched template -> PASS
+    # Test 1 — Original template with filled placeholders -> PASS
     def test_scenario_01_original_untouched_template(self):
         r_c = self.client.post('/api/clients/', data={'name': 'Test 1 Client'}, content_type='application/json')
         cid = r_c.json()['client']['id']
-        pdf_bytes = self._create_nda_pdf(self._get_base_tmpl_lines())
+        lines = self._get_base_tmpl_lines()
+        lines[1] = "Client (Disclosing/Receiving Party): Acme Health"
+        lines[2] = "Provider (Disclosing/Receiving Party): OneSmarter"
+        lines[3] = "Effective Date: 2026-08-15"
+        lines[8] = "Client Signatory: John Doe"
+        lines[9] = "Client Signature Date: 2026-08-15"
+        lines[10] = "Provider Signatory: Jane Smith"
+        lines[11] = "Provider Signature Date: 2026-08-15"
+        pdf_bytes = self._create_nda_pdf(lines)
         r = self.client.post(f'/api/clients/{cid}/steps/step_1_nda/upload', data=pdf_bytes, content_type='application/octet-stream', HTTP_X_FILENAME='OneSmarter_MutualNDA_Template.pdf')
         self.assertEqual(r.status_code, 200)
         self.assertTrue(r.json()['ok'])
@@ -427,7 +454,12 @@ startxref
         cid = r_c.json()['client']['id']
         lines = self._get_base_tmpl_lines()
         lines[1] = "Client (Disclosing/Receiving Party): Northwood Administrators"
+        lines[2] = "Provider (Disclosing/Receiving Party): OneSmarter"
         lines[3] = "Effective Date: 2026-08-15"
+        lines[8] = "Client Signatory: John Doe"
+        lines[9] = "Client Signature Date: 2026-08-15"
+        lines[10] = "Provider Signatory: Jane Smith"
+        lines[11] = "Provider Signature Date: 2026-08-15"
         pdf_bytes = self._create_nda_pdf(lines)
         r = self.client.post(f'/api/clients/{cid}/steps/step_1_nda/upload', data=pdf_bytes, content_type='application/octet-stream', HTTP_X_FILENAME='NDA_Northwood_Executed.pdf')
         self.assertEqual(r.status_code, 200)
@@ -559,6 +591,12 @@ startxref
         cid = r_c.json()['client']['id']
         lines = self._get_base_tmpl_lines()
         lines[1] = "Client (Disclosing/Receiving Party): Northwood & Sons, Inc. (Suite #400)"
+        lines[2] = "Provider (Disclosing/Receiving Party): OneSmarter"
+        lines[3] = "Effective Date: 2026-08-15"
+        lines[8] = "Client Signatory: John Doe"
+        lines[9] = "Client Signature Date: 2026-08-15"
+        lines[10] = "Provider Signatory: Jane Smith"
+        lines[11] = "Provider Signature Date: 2026-08-15"
         pdf_bytes = self._create_nda_pdf(lines)
         r = self.client.post(f'/api/clients/{cid}/steps/step_1_nda/upload', data=pdf_bytes, content_type='application/octet-stream', HTTP_X_FILENAME='NDA_SpecialChars.pdf')
         self.assertEqual(r.status_code, 200)
@@ -584,7 +622,15 @@ startxref
     def test_scenario_18_different_filename_valid_content(self):
         r_c = self.client.post('/api/clients/', data={'name': 'Test 18 Client'}, content_type='application/json')
         cid = r_c.json()['client']['id']
-        pdf_bytes = self._create_nda_pdf(self._get_base_tmpl_lines())
+        lines = self._get_base_tmpl_lines()
+        lines[1] = "Client (Disclosing/Receiving Party): Acme Health"
+        lines[2] = "Provider (Disclosing/Receiving Party): OneSmarter"
+        lines[3] = "Effective Date: 2026-08-15"
+        lines[8] = "Client Signatory: John Doe"
+        lines[9] = "Client Signature Date: 2026-08-15"
+        lines[10] = "Provider Signatory: Jane Smith"
+        lines[11] = "Provider Signature Date: 2026-08-15"
+        pdf_bytes = self._create_nda_pdf(lines)
         r = self.client.post(f'/api/clients/{cid}/steps/step_1_nda/upload', data=pdf_bytes, content_type='application/octet-stream', HTTP_X_FILENAME='my_custom_client_nda_signed_2026.pdf')
         self.assertEqual(r.status_code, 200)
         self.assertTrue(r.json()['ok'])
@@ -677,7 +723,7 @@ startxref
         self.assertEqual(steps[1]['status'], 'WAITING')
 
         # 2. Step 1 Upload & Download
-        r_down1 = self.client.get(f'/api/download/{cid}/golive_step_1_auth')
+        r_down1 = self.client.get(f'/api/clients/{cid}/golive/steps/1/download')
         self.assertEqual(r_down1.status_code, 200)
 
         pdf_bytes_gl1 = self._create_nda_pdf(self._get_cutover_tmpl_lines())
@@ -752,11 +798,11 @@ startxref
     # --- 22. Dynamic Last Login & Access Info Test ---
     def test_dynamic_last_login_and_access_info(self):
         # 1. Perform first login
-        r1 = self.client.post('/api/auth/login/', data={'username': 'admin@onesmarter.com', 'password': 'adminpassword'}, content_type='application/json')
+        r1 = self.client.post('/api/auth/login/', data={'email': 'admin_test@onesmarter.com', 'password': 'testpassword'}, content_type='application/json')
         self.assertEqual(r1.status_code, 200)
 
         # 2. Perform second login
-        r2 = self.client.post('/api/auth/login/', data={'username': 'admin@onesmarter.com', 'password': 'adminpassword'}, content_type='application/json')
+        r2 = self.client.post('/api/auth/login/', data={'email': 'admin_test@onesmarter.com', 'password': 'testpassword'}, content_type='application/json')
         self.assertEqual(r2.status_code, 200)
         data2 = r2.json()
         self.assertIn('last_login', data2)

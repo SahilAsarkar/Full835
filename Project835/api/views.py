@@ -81,7 +81,9 @@ class AuthLoginView(APIView):
         else:
             username_attempt = request.data.get('username', 'admin')
 
-        user = authenticate(username=username_attempt, password=password)
+        user = authenticate(email=username_attempt, password=password)
+        if not user:
+            user = authenticate(username=username_attempt, password=password)
 
         x_forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
         ip = x_forwarded.split(',')[0].strip() if x_forwarded else request.META.get('REMOTE_ADDR', '127.0.0.1')

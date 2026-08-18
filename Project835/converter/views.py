@@ -32,7 +32,8 @@ def api_convert(request):
         except Exception as e:
             return JsonResponse({'error': f'Failed to read uploaded file: {str(e)}'}, status=400)
     else:
-        if request.content_type == 'application/json':
+        ct = (request.content_type or '').lower()
+        if 'application/json' in ct:
             try:
                 body = json.loads(request.body.decode('utf-8'))
                 edi_text = body.get('edi_text', '')
